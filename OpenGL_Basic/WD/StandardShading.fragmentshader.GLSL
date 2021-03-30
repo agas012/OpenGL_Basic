@@ -14,6 +14,8 @@ out vec3 color;
 uniform sampler2D myTextureSampler;
 uniform mat4 MV;
 uniform vec3 LightPosition_worldspace;
+uniform float Image_width;
+uniform float Image_height
 
 void main(){
 

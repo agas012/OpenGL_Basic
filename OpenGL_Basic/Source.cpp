@@ -27,6 +27,8 @@ using namespace glm;
 
 int filters()
 {
+	float width = 1024;
+	float height = 768;
 	if (!glfwInit())
 	{
 		fprintf(stderr, "Failed to initialize GLFW\n");
@@ -136,6 +138,15 @@ int filters()
 	glUseProgram(programID);
 	GLuint LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
 
+	glUseProgram(programID);
+	GLuint WidthID = glGetUniformLocation(programID, "Image_width");
+
+	glUseProgram(programID);
+	GLuint HeightID = glGetUniformLocation(programID, "Image_height");
+
+
+	// Get a handle for our image size
+
 	// For speed computation
 	double lastTime = glfwGetTime();
 	int nbFrames = 0;
@@ -173,6 +184,9 @@ int filters()
 
 		glm::vec3 lightPos = glm::vec3(4, 4, 4);
 		glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
+		glUniform1f(WidthID, width);
+		glUniform1f(HeightID, height);
+
 
 		// Bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
