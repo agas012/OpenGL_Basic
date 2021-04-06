@@ -141,16 +141,16 @@ void main(){
 	}
 
 
-	if(cosTheta>0.65)
-		toonscale =  vec4(1.0,1.0,1.0,1.0);
-	else if (cosTheta>0.5)
-		toonscale = vec4(0.6,0.6,0.6,0.6);
-	else if (cosTheta>0.25)
-		toonscale = vec4(0.2,0.2,0.2,0.2);
-	else
-		toonscale = vec4(0.1,0.1,0.1,0.1);
+	// if(cosTheta>0.65)
+	// 	toonscale =  vec4(1.0,1.0,1.0,1.0);
+	// else if (cosTheta>0.5)
+	// 	toonscale = vec4(0.6,0.6,0.6,0.6);
+	// else if (cosTheta>0.25)
+	// 	toonscale = vec4(0.2,0.2,0.2,0.2);
+	// else
+	// 	toonscale = vec4(0.1,0.1,0.1,0.1);
 
-	//toonscale =  vec4(1.0,1.0,1.0,1.0);
+	toonscale =  vec4(1.0,1.0,1.0,1.0);
 
 	color = 
 		// Ambient : simulates indirect lighting
@@ -159,4 +159,6 @@ void main(){
 		MaterialDiffuseColor * LightColor * LightPower * cosTheta / (distance*distance)  * toonscale +
 		// Specular : reflective highlight, like a mirror
 		MaterialSpecularColor * LightColor * LightPower * pow(cosAlpha,5) / (distance*distance)  * toonscale;
+
+		color.a = 0.4;
 }

@@ -35,7 +35,7 @@ GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path
 	}
 
 	// Read the Fragment Shader code from the file
-	std::string FragmentShaderCode;
+ 	std::string FragmentShaderCode;
 	std::ifstream FragmentShaderStream(fragment_file_path, std::ios::in);
 	if(FragmentShaderStream.is_open()){
 		std::stringstream sstr;
