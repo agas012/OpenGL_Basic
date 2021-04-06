@@ -31,8 +31,18 @@ const mat3 GaussianBlur= (1.0/16.0)*mat3( 1.0, 2.0, 1.0, 2.0, 4.0, 2.0, 1.0, 2.0
 const mat3 SimpleHorzEdge= mat3( 0.0, 0.0, 0.0, -3.0, 3.0, 0.0, 0.0, 0.0, 0.0 );
 const mat3 SimpleVertEdge= mat3( 0.0, -3.0, 0.0, 0.0, 3.0, 0.0, 0.0, 0.0, 0.0 );
 const mat3 ClearNone= mat3( 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0 );
+
+const mat3 customfilter = (1.0/21.0)*mat3(4.0, 1.0, 4.0,1.0, 1.0, 1.0, 4.0, 1.0, 4.0 );
+const mat3 customfilter_R = (1.0/21.0)*mat3(4.0, 1.0, 4.0,1.0, 1.0, 1.0, 4.0, 1.0, 4.0 );
+const mat3 customfilter_G = (1.0/21.0)*mat3(1.0, 4.0, 1.0, 4.0, 1.0, 4.0, 1.0, 4.0, 1.0 );
+const mat3 customfilter_B = (1.0/9.0)*mat3( 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 );
+
+const mat3 intensity_lower= mat3( 0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 0.0, 0.0, 0.0 );
+
+const mat3 Clearcorner= mat3( 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5 );
+
 //you can change the limits and delta to test the solutions of each one of the filters
-const float limits = 1.0;
+const float limits = 0.5;
 const float delta = 0.0; //you can increase delta in order to render a red zone 
 						 //for example limits = 0.5 and delta = 0.4
 void main(){
@@ -40,6 +50,8 @@ void main(){
 	// You probably want to put them as uniforms
 	vec4 LightColor = vec4(1,1,1,1);
 	float LightPower = 40.0;
+	float intensity;
+	vec4 toonscale;
 
 	// Material properties
 	// vec3 MaterialDiffuseColor = texture( DiffuseTextureSampler, UV ).rgb;
@@ -90,9 +102,17 @@ void main(){
 		}
 		//apply the kernel convolution you can select any of defined ones or yoy can write your one and test
 		//this is only for a 3 by 3 matrix of you need a bigger kernel you need to increase the filter size
-		mat3 convolvedMatR = matrixCompMult( SimpleBlur, R);
-		mat3 convolvedMatG = matrixCompMult( SimpleBlur, G);
-		mat3 convolvedMatB = matrixCompMult( SimpleBlur, B);
+		//https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/matrixCompMult.xhtml
+		mat3 convolvedMatR = matrixCompMult( customfilter, R); 
+		mat3 convolvedMatG = matrixCompMult( customfilter, G);
+		mat3 convolvedMatB = matrixCompMult( customfilter, B);
+		// for (int i=0;  i<2; i++)
+		// {
+		// 	convolvedMatR = matrixCompMult( Clearcorner, convolvedMatR); 
+		//  	convolvedMatG = matrixCompMult( Clearcorner, convolvedMatG);
+		//  	convolvedMatB = matrixCompMult( Clearcorner, convolvedMatB);
+		// }
+
 		float convR = 0.0;
 		float convG = 0.0;
 		float convB = 0.0;
@@ -119,11 +139,24 @@ void main(){
         MaterialDiffuseColor = vec4(1.0, 0.0, 0.0, 1.0);
 		MaterialAmbientColor = vec4(0.1,0.1,0.1,1.0) * MaterialDiffuseColor;
 	}
+
+
+	if(cosTheta>0.65)
+		toonscale =  vec4(1.0,1.0,1.0,1.0);
+	else if (cosTheta>0.5)
+		toonscale = vec4(0.6,0.6,0.6,0.6);
+	else if (cosTheta>0.25)
+		toonscale = vec4(0.2,0.2,0.2,0.2);
+	else
+		toonscale = vec4(0.1,0.1,0.1,0.1);
+
+	//toonscale =  vec4(1.0,1.0,1.0,1.0);
+
 	color = 
 		// Ambient : simulates indirect lighting
-		MaterialAmbientColor +
+		(MaterialAmbientColor * toonscale) +
 		// Diffuse : "color" of the object
-		MaterialDiffuseColor * LightColor * LightPower * cosTheta / (distance*distance) +
+		MaterialDiffuseColor * LightColor * LightPower * cosTheta / (distance*distance)  * toonscale +
 		// Specular : reflective highlight, like a mirror
-		MaterialSpecularColor * LightColor * LightPower * pow(cosAlpha,5) / (distance*distance);
+		MaterialSpecularColor * LightColor * LightPower * pow(cosAlpha,5) / (distance*distance)  * toonscale;
 }

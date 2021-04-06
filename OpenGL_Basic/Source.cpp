@@ -96,7 +96,7 @@ int filters()
 
 	// Load the textures
 	GLuint DiffuseTexture = loadDDS("uvmap.DDS");
-	GLuint NormalTexture = loadBMP_custom("normal.bmp");
+	GLuint NormalTexture = loadBMP_custom("normalmap.bmp");
 	GLuint SpecularTexture = loadDDS("specularmap.DDS");
 
 	// Get a handle for our "myTextureSampler" uniform
